@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curriculum Analysis -- KTU B.Tech CSE 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
+      <text x="3" y="22" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" font-style="italic">KTU</text>
+    </svg>
+    <div>
+      <div class="brand-name">Curriculum Analysis</div>
+      <div class="brand-sub">Cross-Branch Comparison & Insights</div>
+    </div>
+  </div>
+  <div class="topbar-nav">
+    <a href="index.html" class="nav-pill">Curriculum</a>
+    <a href="optimization.html" class="nav-pill">Staff Optimization</a>
+    <a href="analysis.html" class="nav-pill active">Analysis</a>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="page-header reveal">
+  <h1>Curriculum Analysis</h1>
+  <p>Cross-branch comparison of the three CSE specializations: Data Science (CD), Cyber Security (CC), and Computer Science (CS). Discover overlaps, unique courses, and workload distribution.</p>
+</div>
+
+<div class="main-content">
+  <!-- Summary Cards -->
+  <div style="margin-bottom:var(--space-6);">
+    <div class="comparison-row" id="summary-cards"></div>
+  </div>
+
+  <div class="analysis-grid">
+    <!-- Credit Distribution Chart -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        Credit Distribution by Category
+      </div>
+      <div class="chart-wrap">
+        <canvas id="creditDistChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Semester Workload Chart -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        Semester Workload Comparison
+      </div>
+      <div class="chart-wrap">
+        <canvas id="workloadChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Course Type Distribution -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        Course Type Distribution per Semester
+      </div>
+      <div class="chart-wrap tall">
+        <canvas id="typeDistChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Branch Specialization Radar -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Branch Specialization Focus
+      </div>
+      <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Course Overlap Analysis -->
+    <div class="chart-card full-width reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
+        Course Overlap Analysis (Semester III onwards)
+      </div>
+      <div id="overlap-content"></div>
+    </div>
+
+    <!-- Branch-Specific Unique Courses -->
+    <div class="chart-card full-width reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Unique Courses by Branch
+      </div>
+      <div id="unique-courses"></div>
+    </div>
+
+    <!-- Elective Diversity -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Elective Course Count by Branch
+      </div>
+      <div class="chart-wrap">
+        <canvas id="electiveChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="chart-card reveal">
+      <div class="chart-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Key Insights
+      </div>
+      <div id="key-insights"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  APJ Abdul Kalam Technological University | B.Tech Curriculum 2024 | Curriculum Analysis Dashboard<br>
+  This analysis is for educational reference. Refer to official KTU regulations for authoritative details.
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+(function(){
+  // Dark mode
+  const t = document.querySelector("[data-theme-toggle]");
+  const r = document.documentElement;
+  let d = matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light";
+  r.setAttribute("data-theme", d);
+  t && t.addEventListener("click", () => {
+    d = d === "dark" ? "light" : "dark";
+    r.setAttribute("data-theme", d);
+    updateChartColors();
+  });
+
+  // Reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target);} });
+  },{threshold:0.08});
+  document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+})();
+
+const chartInstances = {};
+function getTextColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim() || '#28251d';
+}
+function getMutedColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim() || '#7a7974';
+}
+
+function updateChartColors() {
+  const textColor = getTextColor();
+  const mutedColor = getMutedColor();
+  Object.values(chartInstances).forEach(chart => {
+    if (chart.options.scales) {
+      Object.values(chart.options.scales).forEach(scale => {
+        if (scale.ticks) scale.ticks.color = mutedColor;
+        if (scale.title) scale.title.color = mutedColor;
+        if (scale.grid) scale.grid.color = mutedColor + '22';
+        if (scale.pointLabels) scale.pointLabels.color = mutedColor;
+      });
+    }
+    if (chart.options.plugins?.legend?.labels) {
+      chart.options.plugins.legend.labels.color = mutedColor;
+    }
+    chart.update();
+  });
+}
+
+function getSemesterCredits(branch) {
+  const data = CURRICULUM[branch];
+  return Object.values(data).map(sem => {
+    const creditStr = sem.credits;
+    if (creditStr.includes('-')) {
+      const parts = creditStr.split('-').map(Number);
+      return (parts[0] + parts[1]) / 2;
+    }
+    return Number(creditStr);
+  });
+}
+
+function getTypeCredits(branch) {
+  const types = {};
+  Object.values(CURRICULUM[branch]).forEach(sem => {
+    sem.courses.forEach(c => {
+      types[c.type] = (types[c.type] || 0) + c.credits;
+    });
+  });
+  return types;
+}
+
+// Summary Cards
+function buildSummaryCards() {
+  const container = document.getElementById('summary-cards');
+  const branches = ['CD', 'CC', 'CS'];
+  const labels = ['Data Science', 'Cyber Security', 'Computer Science'];
+
+  const totalCourses = branches.map(b =>
+    Object.values(CURRICULUM[b]).reduce((sum, sem) => sum + sem.courses.length, 0)
+  );
+  const totalPE = branches.map(b =>
+    Object.keys(ELECTIVES[b]).filter(k => k.startsWith('PE')).reduce((sum, k) => sum + ELECTIVES[b][k].courses.length, 0)
+  );
+
+  container.innerHTML = branches.map((b, i) => `
+    <div class="comparison-cell">
+      <div class="comparison-branch">${b} -- ${labels[i]}</div>
+      <div class="comparison-value">${totalCourses[i]}</div>
+      <div class="comparison-label">Core Courses | ${totalPE[i]} PE Options</div>
+    </div>
+  `).join('');
+}
+
+// Credit Distribution Doughnut
+function buildCreditDistChart() {
+  const ctx = document.getElementById('creditDistChart').getContext('2d');
+  const labels = CREDIT_STRUCTURE.map(c => c.label.split('(')[0].trim());
+  const data = CREDIT_STRUCTURE.map(c => c.credits);
+  const colors = ['#00796b','#43a047','#1976d2','#c2185b','#f57c00','#7b1fa2','#3949ab','#455a64','#00796b','#ffa000','#01696f'];
+
+  chartInstances.creditDist = new Chart(ctx, {
+    type: 'doughnut',
+    data: {labels, datasets: [{data, backgroundColor: colors, borderWidth: 2, borderColor: 'transparent'}]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {position: 'right', labels: {font: {size: 11}, color: getMutedColor(), padding: 8, usePointStyle: true}},
+        tooltip: {callbacks: {label: ctx => `${ctx.label}: ${ctx.raw} credits (${Math.round(ctx.raw/170*100)}%)`}}
+      }
+    }
+  });
+}
+
+// Semester Workload
+function buildWorkloadChart() {
+  const ctx = document.getElementById('workloadChart').getContext('2d');
+  const semesters = ['S1','S2','S3','S4','S5','S6','S7','S8'];
+
+  chartInstances.workload = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: semesters,
+      datasets: [
+        {label: 'CD (Data Science)', data: getSemesterCredits('CD'), borderColor: '#c2185b', backgroundColor: '#c2185b22', fill: true, tension: 0.3},
+        {label: 'CC (Cyber Security)', data: getSemesterCredits('CC'), borderColor: '#1976d2', backgroundColor: '#1976d222', fill: true, tension: 0.3},
+        {label: 'CS (Computer Science)', data: getSemesterCredits('CS'), borderColor: '#43a047', backgroundColor: '#43a04722', fill: true, tension: 0.3},
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: {title: {display: true, text: 'Credits', color: getMutedColor()}, ticks: {color: getMutedColor()}, grid: {color: getMutedColor()+'22'}},
+        x: {ticks: {color: getMutedColor()}, grid: {color: getMutedColor()+'22'}}
+      },
+      plugins: {legend: {labels: {color: getMutedColor(), usePointStyle: true}}}
+    }
+  });
+}
+
+// Course Type Distribution
+function buildTypeDistChart() {
+  const ctx = document.getElementById('typeDistChart').getContext('2d');
+  const typeOrder = ['BSC','ESC','PC','PBL','PE','HMC','PCL','OE','PWS','SEC'];
+  const typeColors = {BSC:'#43a047',ESC:'#1976d2',PC:'#c2185b',PBL:'#f57c00',PE:'#7b1fa2',HMC:'#00796b',PCL:'#827717',OE:'#3949ab',PWS:'#455a64',SEC:'#ffa000'};
+
+  const datasets = typeOrder.map(type => {
+    const data = [];
+    for (let s = 1; s <= 8; s++) {
+      const sem = CURRICULUM.CD[`Semester ${s}`];
+      data.push(sem.courses.filter(c => c.type === type).reduce((sum, c) => sum + c.credits, 0));
+    }
+    return {label: type, data, backgroundColor: typeColors[type], borderRadius: 3};
+  });
+
+  chartInstances.typeDist = new Chart(ctx, {
+    type: 'bar',
+    data: {labels: ['S1','S2','S3','S4','S5','S6','S7','S8'], datasets},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {stacked: true, ticks: {color: getMutedColor()}, grid: {display: false}},
+        y: {stacked: true, title: {display: true, text: 'Credits', color: getMutedColor()}, ticks: {color: getMutedColor()}, grid: {color: getMutedColor()+'22'}}
+      },
+      plugins: {legend: {labels: {color: getMutedColor(), usePointStyle: true, font: {size: 10}}, position: 'bottom'}}
+    }
+  });
+}
+
+// Radar Chart
+function buildRadarChart() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  const dimensions = ['AI/ML Focus', 'Security Focus', 'Data Focus', 'Systems Focus', 'Theory Focus', 'PBL Diversity'];
+
+  const cdScores = [9, 3, 10, 5, 7, 8];
+  const ccScores = [4, 10, 3, 6, 7, 7];
+  const csScores = [6, 6, 4, 8, 8, 7];
+
+  chartInstances.radar = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: dimensions,
+      datasets: [
+        {label: 'CD (Data Science)', data: cdScores, borderColor: '#c2185b', backgroundColor: '#c2185b33', pointBackgroundColor: '#c2185b'},
+        {label: 'CC (Cyber Security)', data: ccScores, borderColor: '#1976d2', backgroundColor: '#1976d233', pointBackgroundColor: '#1976d2'},
+        {label: 'CS (Computer Science)', data: csScores, borderColor: '#43a047', backgroundColor: '#43a04733', pointBackgroundColor: '#43a047'},
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        r: {
+          beginAtZero: true, max: 10,
+          pointLabels: {color: getMutedColor(), font: {size: 11}},
+          ticks: {color: getMutedColor(), backdropColor: 'transparent'},
+          grid: {color: getMutedColor()+'22'}
+        }
+      },
+      plugins: {legend: {labels: {color: getMutedColor(), usePointStyle: true}}}
+    }
+  });
+}
+
+// Course Overlap
+function buildOverlapAnalysis() {
+  const container = document.getElementById('overlap-content');
+
+  function getCourseSet(branch) {
+    const courses = new Set();
+    for (let s = 3; s <= 8; s++) {
+      CURRICULUM[branch][`Semester ${s}`].courses.forEach(c => {
+        if (!c.name.includes('Programme Elective') && !c.name.includes('Open Elective') && !c.name.includes('HMC Elective')) {
+          courses.add(c.name.replace(/ \[PBL\]/g, ''));
+        }
+      });
+    }
+    return courses;
+  }
+
+  const cdCourses = getCourseSet('CD');
+  const ccCourses = getCourseSet('CC');
+  const csCourses = getCourseSet('CS');
+
+  const allThree = [...cdCourses].filter(c => ccCourses.has(c) && csCourses.has(c));
+  const cdCcOnly = [...cdCourses].filter(c => ccCourses.has(c) && !csCourses.has(c));
+  const cdCsOnly = [...cdCourses].filter(c => !ccCourses.has(c) && csCourses.has(c));
+  const ccCsOnly = [...ccCourses].filter(c => !cdCourses.has(c) && csCourses.has(c));
+
+  container.innerHTML = `
+    <div style="margin-bottom:var(--space-4);">
+      <div class="insight-card">
+        <div class="insight-title">Common to All Three Branches (${allThree.length} courses)</div>
+        <div class="insight-text">
+          <div class="tag-cloud">${allThree.map(c => `<span class="tag-item" style="border-color:var(--bsc-border);color:var(--bsc-text);">${c}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+    <table class="overlap-table">
+      <thead>
+        <tr><th>Overlap Group</th><th>Courses</th><th>Count</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="overlap-badge overlap-common">CD + CC only</span></td>
+          <td>${cdCcOnly.length > 0 ? cdCcOnly.join(', ') : 'None'}</td>
+          <td>${cdCcOnly.length}</td>
+        </tr>
+        <tr>
+          <td><span class="overlap-badge overlap-common">CD + CS only</span></td>
+          <td>${cdCsOnly.length > 0 ? cdCsOnly.join(', ') : 'None'}</td>
+          <td>${cdCsOnly.length}</td>
+        </tr>
+        <tr>
+          <td><span class="overlap-badge overlap-common">CC + CS only</span></td>
+          <td>${ccCsOnly.length > 0 ? ccCsOnly.join(', ') : 'None'}</td>
+          <td>${ccCsOnly.length}</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
+// Unique Courses
+function buildUniqueCourses() {
+  const container = document.getElementById('unique-courses');
+
+  function getUniqueCourses(branch, others) {
+    const unique = [];
+    for (let s = 3; s <= 8; s++) {
+      CURRICULUM[branch][`Semester ${s}`].courses.forEach(c => {
+        if (c.name.includes('Programme Elective') || c.name.includes('Open Elective') || c.name.includes('HMC Elective')) return;
+        const cleanName = c.name.replace(/ \[PBL\]/g, '');
+        const inOthers = others.some(ob => {
+          for (let os = 1; os <= 8; os++) {
+            if (CURRICULUM[ob][`Semester ${os}`].courses.some(oc => oc.name.replace(/ \[PBL\]/g, '') === cleanName)) return true;
+          }
+          return false;
+        });
+        if (!inOthers) unique.push({...c, semester: s});
+      });
+    }
+    return unique;
+  }
+
+  const cdUnique = getUniqueCourses('CD', ['CC','CS']);
+  const ccUnique = getUniqueCourses('CC', ['CD','CS']);
+  const csUnique = getUniqueCourses('CS', ['CD','CC']);
+
+  const renderList = (courses, color) => courses.map(c =>
+    `<div class="elective-item">
+      <span class="elective-code">S${c.semester}</span>
+      <span class="elective-name" style="color:${color}">${c.name}</span>
+      <span style="margin-left:auto;font-size:10px;color:var(--color-text-faint);">${c.type} | ${c.credits}cr</span>
+    </div>`
+  ).join('');
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);">
+      <div>
+        <div style="font-weight:700;color:#c2185b;margin-bottom:var(--space-2);font-size:var(--text-sm);">CD -- Data Science (${cdUnique.length})</div>
+        ${renderList(cdUnique, '#c2185b')}
+      </div>
+      <div>
+        <div style="font-weight:700;color:#1976d2;margin-bottom:var(--space-2);font-size:var(--text-sm);">CC -- Cyber Security (${ccUnique.length})</div>
+        ${renderList(ccUnique, '#1976d2')}
+      </div>
+      <div>
+        <div style="font-weight:700;color:#43a047;margin-bottom:var(--space-2);font-size:var(--text-sm);">CS -- Computer Science (${csUnique.length})</div>
+        ${renderList(csUnique, '#43a047')}
+      </div>
+    </div>
+  `;
+}
+
+// Elective count chart
+function buildElectiveChart() {
+  const ctx = document.getElementById('electiveChart').getContext('2d');
+  const branches = ['CD','CC','CS'];
+  const peCount = branches.map(b =>
+    Object.keys(ELECTIVES[b]).filter(k => k.startsWith('PE')).reduce((sum, k) => sum + ELECTIVES[b][k].courses.length, 0)
+  );
+  const oeCount = branches.map(b =>
+    Object.keys(ELECTIVES[b]).filter(k => k.startsWith('OE')).reduce((sum, k) => sum + ELECTIVES[b][k].courses.length, 0)
+  );
+
+  chartInstances.elective = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['CD (Data Science)', 'CC (Cyber Security)', 'CS (Computer Science)'],
+      datasets: [
+        {label: 'Programme Electives', data: peCount, backgroundColor: '#7b1fa2', borderRadius: 6},
+        {label: 'Open Electives', data: oeCount, backgroundColor: '#3949ab', borderRadius: 6},
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: {title: {display: true, text: 'Number of Options', color: getMutedColor()}, ticks: {color: getMutedColor()}, grid: {color: getMutedColor()+'22'}},
+        x: {ticks: {color: getMutedColor()}, grid: {display: false}}
+      },
+      plugins: {legend: {labels: {color: getMutedColor(), usePointStyle: true}}}
+    }
+  });
+}
+
+// Key Insights
+function buildInsights() {
+  const container = document.getElementById('key-insights');
+
+  const cdPECount = Object.keys(ELECTIVES.CD).filter(k => k.startsWith('PE')).reduce((s, k) => s + ELECTIVES.CD[k].courses.length, 0);
+  const ccPECount = Object.keys(ELECTIVES.CC).filter(k => k.startsWith('PE')).reduce((s, k) => s + ELECTIVES.CC[k].courses.length, 0);
+  const csPECount = Object.keys(ELECTIVES.CS).filter(k => k.startsWith('PE')).reduce((s, k) => s + ELECTIVES.CS[k].courses.length, 0);
+
+  container.innerHTML = `
+    <div class="insight-card">
+      <div class="insight-title">Shared Foundation</div>
+      <div class="insight-text">All three branches share identical Semester I and II curricula (Mathematics, Physics/Chemistry, Python, C, Graphics, EEE). Divergence begins in Semester III with specialized PBL courses and labs.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Credit Structure</div>
+      <div class="insight-text">All branches follow the same 170-credit structure with identical distribution across categories. The differences lie entirely in which specific courses fill the PC, PBL, PE, and PCL slots.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Elective Diversity</div>
+      <div class="insight-text">CS offers the most PE options (${csPECount}), followed by CD (${cdPECount}) and CC (${ccPECount}). Open Electives are identical across all three branches, enabling cross-branch student interaction.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Specialization Depth</div>
+      <div class="insight-text">
+        <strong>CD</strong> focuses on Data Analytics, Big Data, Data Visualization, and ML from S5 onward.<br>
+        <strong>CC</strong> introduces security topics as early as S3 (Network Concepts PBL) with deep dives into Cryptography, Forensics, and Ethical Hacking.<br>
+        <strong>CS</strong> maintains the broadest coverage with more theoretical electives (Quantum Computing, Game Theory, Formal Methods).
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Staff Sharing Potential</div>
+      <div class="insight-text">S1-S2 courses can be taught by the same faculty across all branches. S3-S4 share Theory of Computation, DSA, DBMS, and OS. From S5 onward, dedicated faculty are needed for branch-specific courses like Applied Cryptography (CC), Data Analytics (CD), or Machine Learning Lab (CS).</div>
+    </div>
+  `;
+}
+
+// Initialize
+buildSummaryCards();
+buildCreditDistChart();
+buildWorkloadChart();
+buildTypeDistChart();
+buildRadarChart();
+buildOverlapAnalysis();
+buildUniqueCourses();
+buildElectiveChart();
+buildInsights();
+</script>
+</body>
+</html>

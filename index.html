@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KTU B.Tech CSE Curriculum Architecture 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="KTU CSE Logo">
+      <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
+      <text x="3" y="22" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" font-style="italic">KTU</text>
+      <circle cx="26" cy="8" r="4" fill="white" opacity="0.3"/>
+      <circle cx="26" cy="8" r="2" fill="white"/>
+    </svg>
+    <div>
+      <div class="brand-name">B.Tech CSE Curriculum</div>
+      <div class="brand-sub">APJ Abdul Kalam Technological University | 2024</div>
+    </div>
+  </div>
+  <div class="topbar-nav">
+    <a href="index.html" class="nav-pill active">Curriculum</a>
+    <a href="optimization.html" class="nav-pill">Staff Optimization</a>
+    <a href="analysis.html" class="nav-pill">Analysis</a>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</nav>
+
+<section class="hero reveal">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+    <span id="hero-badge-text">Branch Code: CD | Group A</span>
+  </div>
+  <h1 id="hero-title">Computer Science &amp; Engineering<br/>(Data Science)</h1>
+  <p id="hero-desc">An interactive 8-semester curriculum architecture covering Semester I through VIII -- from foundational sciences to advanced AI, Big Data, and real-world project work.</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">170</div><div class="stat-label">Total Credits</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Semesters</div></div>
+    <div class="stat-item"><div class="stat-num">52</div><div class="stat-label">Core PC Credits</div></div>
+    <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">Elective Credits</div></div>
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Years</div></div>
+  </div>
+</section>
+
+<!-- BRANCH SELECTOR -->
+<div style="text-align:center;padding:0 var(--space-6) var(--space-4);">
+  <div class="branch-tabs">
+    <button class="branch-tab active" data-branch="CD">CD -- Data Science</button>
+    <button class="branch-tab" data-branch="CC">CC -- Cyber Security</button>
+    <button class="branch-tab" data-branch="CS">CS -- Computer Science</button>
+  </div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-label">Course Type:</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--bsc-border)"></span>BSC</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--esc-border)"></span>ESC</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--pc-border)"></span>PC</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--pbl-border)"></span>PBL</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--pe-border)"></span>PE</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--hmc-border)"></span>HMC</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--oe-border)"></span>OE</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--pcl-border)"></span>PCL</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--pws-border)"></span>PWS</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--sec-border)"></span>SEC</span>
+  </div>
+</div>
+
+<main class="main-content">
+  <div class="view-tabs">
+    <button class="view-tab active" data-view="timeline">Semester Timeline</button>
+    <button class="view-tab" data-view="flow">Flow View</button>
+    <button class="view-tab" data-view="credits">Credit Structure</button>
+    <button class="view-tab" data-view="electives">Elective Courses</button>
+  </div>
+
+  <!-- TIMELINE VIEW -->
+  <div class="timeline active" id="view-timeline">
+    <div class="year-section reveal">
+      <div class="year-header">
+        <span class="year-badge">Year 1</span>
+        <span class="year-label">Foundations: Mathematics, Physics, Programming Basics</span>
+        <div class="year-line"></div>
+      </div>
+      <div class="semesters-row">
+        <div class="semester-card" id="sem1">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester I</div><div class="sem-period">July - December</div></div>
+            <span class="sem-credits-badge" id="sem1-credits">25-26 Credits</span>
+          </div>
+          <div class="sem-body" id="sem1-body"></div>
+        </div>
+        <div class="semester-card" id="sem2">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester II</div><div class="sem-period">January - June</div></div>
+            <span class="sem-credits-badge" id="sem2-credits">27-28 Credits</span>
+          </div>
+          <div class="sem-body" id="sem2-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="year-section reveal">
+      <div class="year-header">
+        <span class="year-badge">Year 2</span>
+        <span class="year-label">Core CS: Data Structures, Theory, DBMS, OS</span>
+        <div class="year-line"></div>
+      </div>
+      <div class="semesters-row">
+        <div class="semester-card" id="sem3">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester III</div><div class="sem-period">July - December</div></div>
+            <span class="sem-credits-badge" id="sem3-credits">27-31 Credits</span>
+          </div>
+          <div class="sem-body" id="sem3-body"></div>
+        </div>
+        <div class="semester-card" id="sem4">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester IV</div><div class="sem-period">January - June</div></div>
+            <span class="sem-credits-badge" id="sem4-credits">26-30 Credits</span>
+          </div>
+          <div class="sem-body" id="sem4-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="year-section reveal">
+      <div class="year-header">
+        <span class="year-badge">Year 3</span>
+        <span class="year-label">Advanced: Networks, ML, Compiler Design</span>
+        <div class="year-line"></div>
+      </div>
+      <div class="semesters-row">
+        <div class="semester-card" id="sem5">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester V</div><div class="sem-period">July - December</div></div>
+            <span class="sem-credits-badge" id="sem5-credits">23-27 Credits</span>
+          </div>
+          <div class="sem-body" id="sem5-body"></div>
+        </div>
+        <div class="semester-card" id="sem6">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester VI</div><div class="sem-period">January - June</div></div>
+            <span class="sem-credits-badge" id="sem6-credits">23-28 Credits</span>
+          </div>
+          <div class="sem-body" id="sem6-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="year-section reveal">
+      <div class="year-header">
+        <span class="year-badge">Year 4</span>
+        <span class="year-label">Specialization, Electives, Internship & Major Project</span>
+        <div class="year-line"></div>
+      </div>
+      <div class="semesters-row">
+        <div class="semester-card" id="sem7">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester VII</div><div class="sem-period">July - December</div></div>
+            <span class="sem-credits-badge" id="sem7-credits">17-20 Credits</span>
+          </div>
+          <div class="sem-body" id="sem7-body"></div>
+        </div>
+        <div class="semester-card" id="sem8">
+          <div class="sem-header">
+            <div><div class="sem-title">Semester VIII</div><div class="sem-period">January - June</div></div>
+            <span class="sem-credits-badge" id="sem8-credits">11 Credits</span>
+          </div>
+          <div class="sem-body" id="sem8-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-view" id="view-flow">
+    <div class="flow-grid" id="flow-grid"></div>
+  </div>
+
+  <div class="credits-view" id="view-credits">
+    <div class="credits-grid" id="credits-grid"></div>
+  </div>
+
+  <div class="electives-view credits-view" id="view-electives">
+    <div class="electives-grid" id="electives-grid"></div>
+  </div>
+</main>
+
+<div class="tooltip-overlay" id="tooltip">
+  <div class="tooltip-box">
+    <div class="tooltip-title" id="tooltip-title"></div>
+    <div class="tooltip-detail" id="tooltip-detail"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  APJ Abdul Kalam Technological University | B.Tech Curriculum 2024 | CSE Branches: CD, CC, CS | Group A<br>
+  This diagram is generated for educational reference. Refer to official KTU regulations for authoritative details.
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
