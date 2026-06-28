@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Domain Cluster Dashboard -- KTU B.Tech CSE 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  /* KPI Strip */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-4);
+    max-width: 1400px;
+    margin: 0 auto var(--space-8);
+    padding: 0 var(--space-4);
+  }
+  @media (max-width: 900px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  .kpi-card {
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+  .kpi-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .kpi-card:nth-child(1)::before { background: #6366f1; }
+  .kpi-card:nth-child(2)::before { background: #a855f7; }
+  .kpi-card:nth-child(3)::before { background: #10b981; }
+  .kpi-card:nth-child(4)::before { background: #f97316; }
+  .kpi-card:nth-child(5)::before { background: #3b82f6; }
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: -0.03em;
+  }
+  .kpi-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+    font-weight: 600;
+  }
+
+  /* Cluster Grid */
+  .cluster-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    max-width: 1400px;
+    margin: 0 auto var(--space-8);
+    padding: 0 var(--space-4);
+  }
+  @media (max-width: 1100px) {
+    .cluster-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .cluster-grid { grid-template-columns: 1fr; }
+  }
+
+  .cluster-panel {
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s, transform 0.25s;
+    border-left: 4px solid var(--cluster-color, var(--color-primary));
+  }
+  .cluster-panel:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .cluster-panel-header {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-divider);
+    background: var(--color-surface-2);
+  }
+  .cluster-panel-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-base);
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .cluster-panel-title .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cluster-meta {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .cluster-meta strong {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+  .cluster-panel-body {
+    padding: var(--space-4) var(--space-5);
+  }
+  .cluster-subject-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+  }
+  .cluster-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.01em;
+  }
+  .cluster-faculty-list {
+    border-top: 1px solid var(--color-divider);
+    padding-top: var(--space-3);
+  }
+  .cluster-faculty-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-divider);
+    font-size: var(--text-xs);
+  }
+  .cluster-faculty-item:last-child { border-bottom: none; }
+  .cluster-faculty-name {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .cluster-faculty-role {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  /* Charts Section */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    max-width: 1400px;
+    margin: 0 auto var(--space-8);
+    padding: 0 var(--space-4);
+  }
+  @media (max-width: 900px) {
+    .charts-row { grid-template-columns: 1fr; }
+  }
+
+  /* Insights Grid */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+  }
+  @media (max-width: 700px) {
+    .insights-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Section Heading */
+  .section-heading {
+    max-width: 1400px;
+    margin: 0 auto var(--space-4);
+    padding: 0 var(--space-4);
+  }
+  .section-heading h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="var(--color-primary)"/><text x="3" y="22" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white">KTU</text></svg>
+    <div><div class="brand-name">KTU CSE Department</div><div class="brand-sub">APJ Abdul Kalam Technological University</div></div>
+  </div>
+  <div class="topbar-nav">
+    <a href="index.html" class="nav-pill">Curriculum</a>
+    <a href="analysis.html" class="nav-pill">Analysis</a>
+    <a href="staff-clusters.html" class="nav-pill active">Staff Clusters</a>
+    <a href="hall-system.html" class="nav-pill">Hall System</a>
+    <a href="dev-tools.html" class="nav-pill">Dev Tools</a>
+    <a href="real-internship.html" class="nav-pill">Internship</a>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="hero reveal">
+  <div class="hero-badge">Jaccard Similarity Clustering</div>
+  <h1>Faculty Domain Cluster Analysis</h1>
+  <p>Grouping 12 faculty members into expertise-based domain clusters using Jaccard Similarity for optimized teaching allocation, workload balancing, and gap identification across the B.Tech CSE curriculum.</p>
+</div>
+
+<!-- KPI Strip -->
+<div class="kpi-strip reveal">
+  <div class="kpi-card">
+    <div class="kpi-value">12</div>
+    <div class="kpi-label">Total Faculty</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">7</div>
+    <div class="kpi-label">Clusters</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">78%</div>
+    <div class="kpi-label">Subject Coverage</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">33</div>
+    <div class="kpi-label">High Expertise</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">2.4</div>
+    <div class="kpi-label">Avg Cluster Size</div>
+  </div>
+</div>
+
+<!-- Cluster Cards Section -->
+<div class="section-heading reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    Domain Clusters
+  </h2>
+</div>
+
+<div class="cluster-grid" id="cluster-grid">
+  <!-- Rendered by JS -->
+</div>
+
+<!-- Charts Section -->
+<div class="section-heading reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    Analytics
+  </h2>
+</div>
+
+<div class="charts-row reveal">
+  <div class="chart-card">
+    <div class="chart-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      Expertise Distribution (Top 10 Subjects)
+    </div>
+    <div class="chart-wrap tall">
+      <canvas id="expertiseBarChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      Cluster Size Distribution
+    </div>
+    <div class="chart-wrap tall">
+      <canvas id="clusterDoughnut"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Insights Section -->
+<div class="section-heading reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    Key Insights
+  </h2>
+</div>
+
+<div class="insights-grid reveal" style="margin-bottom:var(--space-12);">
+  <div class="insight-card">
+    <div class="insight-title">Cross-Branch Teaching</div>
+    <div class="insight-text">Semesters S1 and S2 are identical across CD (Data Science), CC (Cyber Security), and CS (Computer Science) branches. The same faculty cluster can teach Mathematics, Physics, Chemistry, Python, and C Programming across all three branches without any duplication of resources.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Coverage Gaps</div>
+    <div class="insight-text">12 subjects in the curriculum remain uncovered by current faculty expertise and require new hiring or adjunct support. These include Chemistry, Physics, Engineering Graphics, Electrical Engineering, Environmental Science, Constitution of India, and other foundational courses.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Methodology: Jaccard Similarity</div>
+    <div class="insight-text">Faculty are clustered using the Jaccard Similarity coefficient, which measures the overlap between two faculty members' subject sets as J(A,B) = |A intersect B| / |A union B|. Faculty pairs with similarity above the threshold (0.3) are grouped into the same cluster, ensuring domain coherence.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Optimization Benefits</div>
+    <div class="insight-text">Cluster-based allocation enables three key optimizations: (1) Load balancing by distributing subjects evenly within clusters, (2) Expertise matching by assigning high-expertise faculty to core courses, and (3) Gap identification by revealing uncovered subjects that require new faculty recruitment.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Dark mode
+  const t = document.querySelector("[data-theme-toggle]");
+  const r = document.documentElement;
+  let d = localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
+  r.setAttribute("data-theme", d);
+  t && t.addEventListener("click", () => {
+    d = d === "dark" ? "light" : "dark";
+    r.setAttribute("data-theme", d);
+    localStorage.setItem("theme", d);
+    rebuildCharts();
+  });
+
+  // Scroll Reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target);} });
+  },{threshold:0.08});
+  document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+})();
+
+// ===== DATA =====
+const CLUSTERS = [
+  {
+    name: "Programming",
+    color: "#10b981",
+    lead: "Staff-6",
+    members: ["Staff-6", "Staff-7"],
+    subjects: ["Python", "C", "OOP", "Algorithmic Thinking", "Programming in C"],
+    expertise: {
+      "Staff-6": {level: "high", subjects: ["Python", "C", "OOP", "Programming in C"]},
+      "Staff-7": {level: "high", subjects: ["Algorithmic Thinking", "C", "Python"]}
+    }
+  },
+  {
+    name: "AI & Data Science",
+    color: "#a855f7",
+    lead: "Staff-1",
+    members: ["Staff-1", "Staff-10", "Staff-4"],
+    subjects: ["ML", "Deep Learning", "Data Analytics", "Computer Vision", "NLP", "Reinforcement Learning", "Data Mining", "Big Data", "Data Visualization"],
+    expertise: {
+      "Staff-1": {level: "high", subjects: ["ML", "Deep Learning", "NLP", "Reinforcement Learning"]},
+      "Staff-10": {level: "high", subjects: ["Data Analytics", "Data Mining", "Big Data", "Data Visualization"]},
+      "Staff-4": {level: "medium", subjects: ["Computer Vision", "ML", "Deep Learning"]}
+    }
+  },
+  {
+    name: "Cyber Security",
+    color: "#ec4899",
+    lead: "Staff-3",
+    members: ["Staff-3", "Staff-9", "Staff-11"],
+    subjects: ["Network Security", "Cryptography", "Cyber Forensics", "Digital Forensics", "Ethical Hacking", "Information Security", "Blockchain"],
+    expertise: {
+      "Staff-3": {level: "high", subjects: ["Network Security", "Cryptography", "Information Security"]},
+      "Staff-9": {level: "high", subjects: ["Cyber Forensics", "Digital Forensics", "Ethical Hacking"]},
+      "Staff-11": {level: "medium", subjects: ["Blockchain", "Cryptography", "Information Security"]}
+    }
+  },
+  {
+    name: "Systems & Networks",
+    color: "#3b82f6",
+    lead: "Staff-5",
+    members: ["Staff-5", "Staff-8"],
+    subjects: ["OS", "Compiler Design", "Computer Org", "Microcontrollers", "Embedded Systems", "Computer Networks", "Digital Electronics", "IoT"],
+    expertise: {
+      "Staff-5": {level: "high", subjects: ["OS", "Compiler Design", "Computer Org", "Computer Networks"]},
+      "Staff-8": {level: "high", subjects: ["Microcontrollers", "Embedded Systems", "Digital Electronics", "IoT"]}
+    }
+  },
+  {
+    name: "Mathematics",
+    color: "#14b8a6",
+    lead: "Staff-7",
+    members: ["Staff-7", "Staff-2"],
+    subjects: ["Mathematics", "Discrete Mathematics", "Theory of Computation"],
+    expertise: {
+      "Staff-7": {level: "high", subjects: ["Discrete Mathematics", "Theory of Computation"]},
+      "Staff-2": {level: "high", subjects: ["Mathematics", "Discrete Mathematics"]}
+    }
+  },
+  {
+    name: "Software Engineering",
+    color: "#f97316",
+    lead: "Staff-12",
+    members: ["Staff-12", "Staff-6"],
+    subjects: ["Software Eng", "Project Management", "Web Programming", "Mobile Apps", "Testing", "Prompt Engineering"],
+    expertise: {
+      "Staff-12": {level: "high", subjects: ["Software Eng", "Project Management", "Testing"]},
+      "Staff-6": {level: "medium", subjects: ["Web Programming", "Mobile Apps", "Prompt Engineering"]}
+    }
+  },
+  {
+    name: "Professional Courses",
+    color: "#64748b",
+    lead: "Staff-12",
+    members: ["Staff-12", "Staff-7", "Staff-6"],
+    subjects: ["Ethics", "Economics", "Life Skills", "Entrepreneurship", "Design Thinking"],
+    expertise: {
+      "Staff-12": {level: "medium", subjects: ["Ethics", "Entrepreneurship", "Design Thinking"]},
+      "Staff-7": {level: "medium", subjects: ["Economics", "Life Skills"]},
+      "Staff-6": {level: "low", subjects: ["Ethics", "Life Skills"]}
+    }
+  }
+];
+
+// Top 10 subjects expertise distribution
+const EXPERTISE_DIST = [
+  { subject: "ML", high: 2, medium: 1, low: 0 },
+  { subject: "Python", high: 2, medium: 0, low: 0 },
+  { subject: "Cryptography", high: 1, medium: 1, low: 0 },
+  { subject: "OS", high: 1, medium: 1, low: 0 },
+  { subject: "Data Analytics", high: 1, medium: 1, low: 0 },
+  { subject: "Mathematics", high: 2, medium: 0, low: 0 },
+  { subject: "C", high: 2, medium: 0, low: 0 },
+  { subject: "Network Security", high: 1, medium: 0, low: 1 },
+  { subject: "Deep Learning", high: 1, medium: 1, low: 0 },
+  { subject: "Software Eng", high: 1, medium: 0, low: 1 }
+];
+
+// ===== HELPERS =====
+function getTextColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim() || '#1a1a2e';
+}
+function getMutedColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim() || '#6b7194';
+}
+function getBorderColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-divider').trim() || '#e8ecf4';
+}
+
+// ===== RENDER CLUSTER CARDS =====
+function renderClusters() {
+  const grid = document.getElementById('cluster-grid');
+  grid.innerHTML = CLUSTERS.map((cluster, idx) => {
+    const subjectTags = cluster.subjects.map(s => {
+      // Determine expertise level for this subject across members
+      let level = 'low';
+      for (const member of cluster.members) {
+        const exp = cluster.expertise[member];
+        if (exp && exp.subjects.includes(s)) {
+          if (exp.level === 'high') { level = 'high'; break; }
+          if (exp.level === 'medium') level = 'medium';
+        }
+      }
+      return `<span class="expertise-badge expertise-${level}">${s}</span>`;
+    }).join('');
+
+    const facultyItems = cluster.members.map(m => {
+      const exp = cluster.expertise[m];
+      const isLead = m === cluster.lead;
+      return `
+        <div class="cluster-faculty-item">
+          <div>
+            <span class="cluster-faculty-name">${m}${isLead ? ' <span style="font-size:9px;color:' + cluster.color + ';font-weight:800;">LEAD</span>' : ''}</span>
+            <div class="cluster-faculty-role">${exp.subjects.slice(0, 3).join(', ')}${exp.subjects.length > 3 ? '...' : ''}</div>
+          </div>
+          <span class="expertise-badge expertise-${exp.level}" style="flex-shrink:0;">${exp.level.toUpperCase()}</span>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="cluster-panel reveal" style="--cluster-color:${cluster.color};">
+        <div class="cluster-panel-header">
+          <div class="cluster-panel-title">
+            <span class="dot" style="background:${cluster.color};"></span>
+            ${cluster.name}
+          </div>
+          <div class="cluster-meta">
+            <span>Lead: <strong>${cluster.lead}</strong></span>
+            <span>Members: <strong>${cluster.members.length}</strong></span>
+          </div>
+        </div>
+        <div class="cluster-panel-body">
+          <div class="cluster-subject-list">${subjectTags}</div>
+          <div class="cluster-faculty-list">${facultyItems}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Re-observe newly created .reveal elements
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target);} });
+  },{threshold:0.08});
+  grid.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+// ===== CHARTS =====
+let chartInstances = {};
+
+function buildExpertiseChart() {
+  const ctx = document.getElementById('expertiseBarChart').getContext('2d');
+  const labels = EXPERTISE_DIST.map(d => d.subject);
+  const highData = EXPERTISE_DIST.map(d => d.high);
+  const mediumData = EXPERTISE_DIST.map(d => d.medium);
+  const lowData = EXPERTISE_DIST.map(d => d.low);
+
+  if (chartInstances.expertise) chartInstances.expertise.destroy();
+
+  chartInstances.expertise = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'High', data: highData, backgroundColor: '#10b981', borderRadius: 4 },
+        { label: 'Medium', data: mediumData, backgroundColor: '#f97316', borderRadius: 4 },
+        { label: 'Low', data: lowData, backgroundColor: '#ec4899', borderRadius: 4 }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          stacked: true,
+          title: { display: true, text: 'Faculty Count', color: getMutedColor(), font: { family: "'Plus Jakarta Sans', sans-serif" } },
+          ticks: { color: getMutedColor(), stepSize: 1 },
+          grid: { color: getBorderColor() }
+        },
+        y: {
+          stacked: true,
+          ticks: { color: getTextColor(), font: { size: 11, family: "'Plus Jakarta Sans', sans-serif", weight: '600' } },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: getMutedColor(), usePointStyle: true, font: { size: 11 }, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.raw} faculty`
+          }
+        }
+      }
+    }
+  });
+}
+
+function buildClusterDoughnut() {
+  const ctx = document.getElementById('clusterDoughnut').getContext('2d');
+  const labels = CLUSTERS.map(c => c.name);
+  const data = CLUSTERS.map(c => c.members.length);
+  const colors = CLUSTERS.map(c => c.color);
+
+  if (chartInstances.doughnut) chartInstances.doughnut.destroy();
+
+  chartInstances.doughnut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderWidth: 3,
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#ffffff',
+        hoverBorderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '55%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            color: getMutedColor(),
+            usePointStyle: true,
+            font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+            padding: 12,
+            generateLabels: function(chart) {
+              const data = chart.data;
+              return data.labels.map((label, i) => ({
+                text: `${label} (${data.datasets[0].data[i]})`,
+                fillStyle: data.datasets[0].backgroundColor[i],
+                strokeStyle: 'transparent',
+                pointStyle: 'rectRounded',
+                index: i
+              }));
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = Math.round(ctx.raw / total * 100);
+              return `${ctx.label}: ${ctx.raw} faculty (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function rebuildCharts() {
+  buildExpertiseChart();
+  buildClusterDoughnut();
+}
+
+// ===== INIT =====
+renderClusters();
+buildExpertiseChart();
+buildClusterDoughnut();
+</script>
+</body>
+</html>

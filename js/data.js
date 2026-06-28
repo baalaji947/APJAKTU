@@ -553,28 +553,28 @@ const ALL_SUBJECT_AREAS = [
 ];
 
 const SAMPLE_STAFF = [
-  {name:"Dr. Arun Kumar",subjects:["Machine Learning","Deep Learning","Data Analytics","Artificial Intelligence","NLP"],expertise:{
+  {name:"Staff-1",subjects:["Machine Learning","Deep Learning","Data Analytics","Artificial Intelligence","NLP"],expertise:{
     "Machine Learning":"high","Deep Learning":"high","Data Analytics":"medium","Artificial Intelligence":"high","NLP":"medium"}},
-  {name:"Prof. Meera Nair",subjects:["Data Structures & Algorithms","Theory of Computation","Design & Analysis of Algorithms","Discrete Mathematics"],expertise:{
+  {name:"Staff-2",subjects:["Data Structures & Algorithms","Theory of Computation","Design & Analysis of Algorithms","Discrete Mathematics"],expertise:{
     "Data Structures & Algorithms":"high","Theory of Computation":"high","Design & Analysis of Algorithms":"high","Discrete Mathematics":"medium"}},
-  {name:"Dr. Rajesh Pillai",subjects:["Computer Networks","Network Security","Applied Cryptography","Wireless Networks","Ethical Hacking"],expertise:{
+  {name:"Staff-3",subjects:["Computer Networks","Network Security","Applied Cryptography","Wireless Networks","Ethical Hacking"],expertise:{
     "Computer Networks":"high","Network Security":"high","Applied Cryptography":"medium","Wireless Networks":"medium","Ethical Hacking":"medium"}},
-  {name:"Prof. Lakshmi Devi",subjects:["Database Management Systems","Big Data","Data Mining","Cloud Computing","Data Visualization"],expertise:{
+  {name:"Staff-4",subjects:["Database Management Systems","Big Data","Data Mining","Cloud Computing","Data Visualization"],expertise:{
     "Database Management Systems":"high","Big Data":"high","Data Mining":"medium","Cloud Computing":"medium","Data Visualization":"medium"}},
-  {name:"Dr. Suresh Menon",subjects:["Operating Systems","Compiler Design","Computer Organization","Microcontrollers","Embedded Systems"],expertise:{
+  {name:"Staff-5",subjects:["Operating Systems","Compiler Design","Computer Organization","Microcontrollers","Embedded Systems"],expertise:{
     "Operating Systems":"high","Compiler Design":"high","Computer Organization":"high","Microcontrollers":"medium","Embedded Systems":"medium"}},
-  {name:"Prof. Priya Sharma",subjects:["Python Programming","C Programming","Object Oriented Programming","Web Programming","Software Engineering"],expertise:{
+  {name:"Staff-6",subjects:["Python Programming","C Programming","Object Oriented Programming","Web Programming","Software Engineering"],expertise:{
     "Python Programming":"high","C Programming":"high","Object Oriented Programming":"high","Web Programming":"medium","Software Engineering":"medium"}},
-  {name:"Dr. Vinod Thomas",subjects:["Mathematics","Discrete Mathematics","Theory of Computation","Data Analytics"],expertise:{
+  {name:"Staff-7",subjects:["Mathematics","Discrete Mathematics","Theory of Computation","Data Analytics"],expertise:{
     "Mathematics":"high","Discrete Mathematics":"high","Theory of Computation":"medium","Data Analytics":"medium"}},
-  {name:"Prof. Anitha Varma",subjects:["Digital Electronics","Microcontrollers","IoT","Embedded Systems","Computer Organization"],expertise:{
+  {name:"Staff-8",subjects:["Digital Electronics","Microcontrollers","IoT","Embedded Systems","Computer Organization"],expertise:{
     "Digital Electronics":"high","Microcontrollers":"high","IoT":"high","Embedded Systems":"high","Computer Organization":"medium"}},
-  {name:"Dr. Sanjay Gupta",subjects:["Cyber Forensics","Digital Forensics","Information Security","Ethical Hacking","Network Security"],expertise:{
+  {name:"Staff-9",subjects:["Cyber Forensics","Digital Forensics","Information Security","Ethical Hacking","Network Security"],expertise:{
     "Cyber Forensics":"high","Digital Forensics":"high","Information Security":"high","Ethical Hacking":"medium","Network Security":"medium"}},
-  {name:"Prof. Deepa Krishnan",subjects:["Computer Vision","Digital Image Processing","Deep Learning","Machine Learning","Reinforcement Learning"],expertise:{
+  {name:"Staff-10",subjects:["Computer Vision","Digital Image Processing","Deep Learning","Machine Learning","Reinforcement Learning"],expertise:{
     "Computer Vision":"high","Digital Image Processing":"high","Deep Learning":"high","Machine Learning":"medium","Reinforcement Learning":"medium"}},
-  {name:"Dr. Mohan Raj",subjects:["Blockchain","Cloud Computing","IoT","Applied Cryptography","Information Security"],expertise:{
+  {name:"Staff-11",subjects:["Blockchain","Cloud Computing","IoT","Applied Cryptography","Information Security"],expertise:{
     "Blockchain":"high","Cloud Computing":"high","IoT":"medium","Applied Cryptography":"medium","Information Security":"medium"}},
-  {name:"Prof. Kavitha Nair",subjects:["Software Engineering","Project Management","Web Programming","Mobile Applications","Prompt Engineering"],expertise:{
+  {name:"Staff-12",subjects:["Software Engineering","Project Management","Web Programming","Mobile Applications","Prompt Engineering"],expertise:{
     "Software Engineering":"high","Project Management":"high","Web Programming":"high","Mobile Applications":"medium","Prompt Engineering":"medium"}},
 ];

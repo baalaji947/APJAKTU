@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hall-Based Class System -- KTU B.Tech CSE 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* ===== HALL SYSTEM PAGE STYLES ===== */
+
+/* KPI Strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4);max-width:1400px;margin:0 auto var(--space-8);padding:0 var(--space-4);}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);text-align:center;box-shadow:var(--shadow-sm);transition:box-shadow 0.25s,transform 0.25s;}
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.kpi-icon{width:44px;height:44px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-3);background:var(--color-primary-highlight);color:var(--color-primary);}
+.kpi-num{font-family:var(--font-display);font-size:var(--text-xl);font-weight:800;color:var(--color-primary);letter-spacing:-0.03em;}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;font-weight:600;}
+.kpi-sub{font-size:10px;color:var(--color-text-faint);margin-top:2px;font-weight:500;}
+
+/* Section Headers */
+.section-header{max-width:1400px;margin:0 auto var(--space-5);padding:0 var(--space-4);}
+.section-header h2{font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-text);font-weight:700;letter-spacing:-0.02em;display:flex;align-items:center;gap:var(--space-2);}
+.section-header p{font-size:var(--text-sm);color:var(--color-text-muted);margin-top:var(--space-1);font-weight:500;}
+
+/* Hall Directory Grid */
+.hall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--space-4);max-width:1400px;margin:0 auto var(--space-10);padding:0 var(--space-4);}
+.hall-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.25s,transform 0.25s;}
+.hall-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.hall-card-header{padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);background:var(--color-surface-2);display:flex;justify-content:space-between;align-items:flex-start;}
+.hall-card-title{font-weight:700;font-size:var(--text-sm);color:var(--color-text);font-family:var(--font-display);letter-spacing:-0.01em;}
+.hall-type-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:var(--radius-full);letter-spacing:0.06em;text-transform:uppercase;}
+.badge-lecture{background:var(--esc-bg);color:var(--esc-text);border:1px solid var(--esc-border);}
+.badge-lab{background:var(--pe-bg);color:var(--pe-text);border:1px solid var(--pe-border);}
+.hall-card-body{padding:var(--space-4) var(--space-5);}
+.hall-detail-row{display:flex;justify-content:space-between;align-items:center;padding:var(--space-1) 0;font-size:var(--text-xs);}
+.hall-detail-label{color:var(--color-text-muted);font-weight:600;}
+.hall-detail-value{color:var(--color-text);font-weight:600;text-align:right;}
+.hall-subject{font-weight:700;color:var(--color-primary);font-size:var(--text-sm);margin-bottom:var(--space-2);font-family:var(--font-display);}
+.hall-subject.free{color:var(--color-text-faint);font-style:italic;}
+.hall-sections{display:flex;flex-wrap:wrap;gap:var(--space-1);margin-top:var(--space-2);}
+.section-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--radius-sm);background:var(--color-primary-highlight);color:var(--color-primary);border:1px solid color-mix(in srgb,var(--color-primary) 20%,transparent);letter-spacing:0.02em;}
+.occupancy-bar-wrap{margin-top:var(--space-3);height:8px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden;}
+.occupancy-bar{height:100%;border-radius:var(--radius-full);transition:width 1.2s ease;}
+.occupancy-bar.green{background:linear-gradient(90deg,#10b981,#34d399);}
+.occupancy-bar.yellow{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.occupancy-bar.red{background:linear-gradient(90deg,#ef4444,#f87171);}
+.occupancy-label{display:flex;justify-content:space-between;margin-top:var(--space-1);font-size:10px;font-weight:600;}
+.occupancy-label span:first-child{color:var(--color-text-muted);}
+.occupancy-label span:last-child{color:var(--color-text);}
+
+/* Weekly Timetable */
+.timetable-wrap{max-width:1400px;margin:0 auto var(--space-10);padding:0 var(--space-4);overflow-x:auto;}
+.timetable{width:100%;border-collapse:separate;border-spacing:var(--space-1);min-width:800px;}
+.timetable th{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-2);font-family:var(--font-display);font-size:var(--text-xs);font-weight:700;color:var(--color-text);text-align:center;letter-spacing:-0.01em;}
+.timetable th.time-col{background:var(--color-surface-2);color:var(--color-text-muted);min-width:80px;}
+.timetable td{vertical-align:top;padding:0;}
+.tt-cell{border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);font-size:10px;line-height:1.4;min-height:60px;border:1.5px solid transparent;transition:transform 0.15s,box-shadow 0.15s;}
+.tt-cell:hover{transform:scale(1.02);box-shadow:var(--shadow-md);z-index:2;position:relative;}
+.tt-subject{font-weight:700;font-size:11px;margin-bottom:2px;}
+.tt-hall{font-weight:600;opacity:0.85;}
+.tt-faculty{opacity:0.7;font-weight:500;}
+.tt-empty{background:var(--color-surface);border:1.5px dashed var(--color-divider);border-radius:var(--radius-md);min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--color-text-faint);font-size:10px;font-weight:500;}
+
+/* Timetable color classes */
+.tt-ai{background:#eef2ff;border-color:#818cf8;color:#3730a3;}
+.tt-dm{background:#fdf2f8;border-color:#f472b6;color:#9d174d;}
+.tt-bc{background:#ecfdf5;border-color:#34d399;color:#065f46;}
+.tt-st{background:#fff7ed;border-color:#fb923c;color:#c2410c;}
+.tt-cc{background:#f0fdfa;border-color:#2dd4bf;color:#115e59;}
+.tt-py{background:#faf5ff;border-color:#c084fc;color:#6b21a8;}
+.tt-wp{background:#fffbeb;border-color:#fbbf24;color:#b45309;}
+.tt-iot{background:#fef2f2;border-color:#f87171;color:#991b1b;}
+.tt-ip{background:#f0f9ff;border-color:#38bdf8;color:#075985;}
+.tt-cf{background:#f5f3ff;border-color:#a78bfa;color:#5b21b6;}
+[data-theme="dark"] .tt-ai{background:#1e1b4b;border-color:#818cf8;color:#a5b4fc;}
+[data-theme="dark"] .tt-dm{background:#2d0a20;border-color:#f472b6;color:#f9a8d4;}
+[data-theme="dark"] .tt-bc{background:#052e16;border-color:#34d399;color:#a7f3d0;}
+[data-theme="dark"] .tt-st{background:#2a1608;border-color:#fb923c;color:#fdba74;}
+[data-theme="dark"] .tt-cc{background:#042f2e;border-color:#2dd4bf;color:#99f6e4;}
+[data-theme="dark"] .tt-py{background:#1e0a38;border-color:#c084fc;color:#d8b4fe;}
+[data-theme="dark"] .tt-wp{background:#271907;border-color:#fbbf24;color:#fde68a;}
+[data-theme="dark"] .tt-iot{background:#2c0b0b;border-color:#f87171;color:#fca5a5;}
+[data-theme="dark"] .tt-ip{background:#0c2d48;border-color:#38bdf8;color:#7dd3fc;}
+[data-theme="dark"] .tt-cf{background:#1a0a38;border-color:#a78bfa;color:#c4b5fd;}
+
+/* Student Flow */
+.flow-section{max-width:1400px;margin:0 auto var(--space-10);padding:0 var(--space-4);}
+.flow-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:var(--space-4);}
+@media(max-width:800px){.flow-cards{grid-template-columns:1fr;}}
+.flow-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.25s;}
+.flow-card:hover{box-shadow:var(--shadow-md);}
+.flow-card-header{padding:var(--space-3) var(--space-5);background:var(--color-surface-2);border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:center;}
+.flow-card-title{font-weight:700;font-size:var(--text-sm);color:var(--color-text);font-family:var(--font-display);letter-spacing:-0.01em;}
+.flow-card-count{font-size:var(--text-xs);color:var(--color-text-muted);background:var(--color-surface-offset);padding:2px 10px;border-radius:var(--radius-full);font-weight:600;}
+.flow-card-body{padding:var(--space-4) var(--space-5);}
+.hall-flow-list{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;}
+.hall-flow-item{display:flex;align-items:center;gap:var(--space-2);background:var(--color-surface-2);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);font-size:var(--text-xs);font-weight:600;color:var(--color-text);transition:border-color 0.2s,background 0.2s;}
+.hall-flow-item:hover{border-color:var(--color-primary);background:var(--color-primary-highlight);}
+.hall-flow-item .flow-subject{font-size:10px;color:var(--color-text-muted);font-weight:500;}
+.flow-arrow{color:var(--color-text-faint);font-size:14px;font-weight:300;flex-shrink:0;}
+
+/* Benefits Section */
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-4);max-width:1400px;margin:0 auto var(--space-10);padding:0 var(--space-4);}
+
+/* Comparison Row (reuse from analysis) */
+.comparison-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-4);}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="var(--color-primary)"/><text x="3" y="22" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white">KTU</text></svg>
+    <div><div class="brand-name">KTU CSE Department</div><div class="brand-sub">APJ Abdul Kalam Technological University</div></div>
+  </div>
+  <div class="topbar-nav">
+    <a href="index.html" class="nav-pill">Curriculum</a>
+    <a href="analysis.html" class="nav-pill">Analysis</a>
+    <a href="staff-clusters.html" class="nav-pill">Staff Clusters</a>
+    <a href="hall-system.html" class="nav-pill active">Hall System</a>
+    <a href="dev-tools.html" class="nav-pill">Dev Tools</a>
+    <a href="real-internship.html" class="nav-pill">Internship</a>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero reveal">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+    <span>Subject-Centric Hall Allocation</span>
+  </div>
+  <h1>Hall-Based Class System</h1>
+  <p>Each subject is assigned to a specific hall or lab, and students from multiple sections and branches move to that hall for that subject. This mirrors real university operations -- specialized rooms host specialized teaching, maximizing both resource utilization and learning outcomes.</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Halls & Labs</div></div>
+    <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Sections</div></div>
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Active Subjects</div></div>
+    <div class="stat-item"><div class="stat-num">76%</div><div class="stat-label">Avg Occupancy</div></div>
+  </div>
+</section>
+
+<!-- ===== KPI STRIP ===== -->
+<div class="kpi-strip reveal">
+  <div class="kpi-card">
+    <div class="kpi-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+    </div>
+    <div class="kpi-num">10</div>
+    <div class="kpi-label">Total Halls</div>
+    <div class="kpi-sub">5 Lecture + 5 Labs</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </div>
+    <div class="kpi-num">18</div>
+    <div class="kpi-label">Active Classes</div>
+    <div class="kpi-sub">Weekly sessions across halls</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/><path d="M9 21H5a2 2 0 0 1-2-2v-4"/><path d="M15 21h4a2 2 0 0 0 2-2v-4"/></svg>
+    </div>
+    <div class="kpi-num">8</div>
+    <div class="kpi-label">Lab Sessions</div>
+    <div class="kpi-sub">Hands-on practical slots</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    </div>
+    <div class="kpi-num">76%</div>
+    <div class="kpi-label">Avg Occupancy</div>
+    <div class="kpi-sub">Across all halls</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="kpi-num">6</div>
+    <div class="kpi-label">Sections Served</div>
+    <div class="kpi-sub">CS-A, CS-B, CD-A, CD-B, CC-A, CC-B</div>
+  </div>
+</div>
+
+<!-- ===== HALL DIRECTORY ===== -->
+<div class="section-header reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+    Hall Directory
+  </h2>
+  <p>Real-time allocation of all 10 halls and labs with current subject, faculty, and occupancy status.</p>
+</div>
+
+<div class="hall-grid" id="hallGrid">
+  <!-- Cards rendered by JS -->
+</div>
+
+<!-- ===== WEEKLY TIMETABLE ===== -->
+<div class="section-header reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+    Weekly Timetable
+  </h2>
+  <p>Visual schedule showing which subject runs in which hall at every time slot across the week.</p>
+</div>
+
+<div class="timetable-wrap reveal">
+  <table class="timetable">
+    <thead>
+      <tr>
+        <th class="time-col">Time</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th class="time-col">9:00 - 10:00</th>
+        <td><div class="tt-cell tt-ai"><div class="tt-subject">AI</div><div class="tt-hall">Seminar Hall A</div><div class="tt-faculty">Staff-1</div></div></td>
+        <td><div class="tt-cell tt-bc"><div class="tt-subject">Blockchain</div><div class="tt-hall">Lecture Hall 1</div><div class="tt-faculty">Staff-11</div></div></td>
+        <td><div class="tt-cell tt-dm"><div class="tt-subject">Data Mining</div><div class="tt-hall">Seminar Hall B</div><div class="tt-faculty">Staff-4</div></div></td>
+        <td><div class="tt-cell tt-ai"><div class="tt-subject">AI</div><div class="tt-hall">Seminar Hall A</div><div class="tt-faculty">Staff-1</div></div></td>
+        <td><div class="tt-cell tt-st"><div class="tt-subject">Software Testing</div><div class="tt-hall">Lecture Hall 2</div><div class="tt-faculty">Staff-12</div></div></td>
+      </tr>
+      <tr>
+        <th class="time-col">10:00 - 11:00</th>
+        <td><div class="tt-cell tt-dm"><div class="tt-subject">Data Mining</div><div class="tt-hall">Seminar Hall B</div><div class="tt-faculty">Staff-4</div></div></td>
+        <td><div class="tt-cell tt-cc"><div class="tt-subject">Cloud Computing</div><div class="tt-hall">Lecture Hall 3</div><div class="tt-faculty">Staff-11</div></div></td>
+        <td><div class="tt-cell tt-ai"><div class="tt-subject">AI</div><div class="tt-hall">Seminar Hall A</div><div class="tt-faculty">Staff-1</div></div></td>
+        <td><div class="tt-cell tt-bc"><div class="tt-subject">Blockchain</div><div class="tt-hall">Lecture Hall 1</div><div class="tt-faculty">Staff-11</div></div></td>
+        <td><div class="tt-cell tt-cc"><div class="tt-subject">Cloud Computing</div><div class="tt-hall">Lecture Hall 3</div><div class="tt-faculty">Staff-11</div></div></td>
+      </tr>
+      <tr>
+        <th class="time-col">11:00 - 12:00</th>
+        <td><div class="tt-cell tt-st"><div class="tt-subject">Software Testing</div><div class="tt-hall">Lecture Hall 2</div><div class="tt-faculty">Staff-12</div></div></td>
+        <td><div class="tt-cell tt-ai"><div class="tt-subject">AI</div><div class="tt-hall">Seminar Hall A</div><div class="tt-faculty">Staff-1</div></div></td>
+        <td><div class="tt-cell tt-cc"><div class="tt-subject">Cloud Computing</div><div class="tt-hall">Lecture Hall 3</div><div class="tt-faculty">Staff-11</div></div></td>
+        <td><div class="tt-cell tt-dm"><div class="tt-subject">Data Mining</div><div class="tt-hall">Seminar Hall B</div><div class="tt-faculty">Staff-4</div></div></td>
+        <td><div class="tt-cell tt-bc"><div class="tt-subject">Blockchain</div><div class="tt-hall">Lecture Hall 1</div><div class="tt-faculty">Staff-11</div></div></td>
+      </tr>
+      <tr>
+        <th class="time-col">2:00 - 4:00</th>
+        <td><div class="tt-cell tt-py"><div class="tt-subject">Python Lab</div><div class="tt-hall">Lab 1</div><div class="tt-faculty">Staff-6</div></div></td>
+        <td><div class="tt-cell tt-wp"><div class="tt-subject">Web Prog Lab</div><div class="tt-hall">Lab 2</div><div class="tt-faculty">Staff-12</div></div></td>
+        <td><div class="tt-cell tt-iot"><div class="tt-subject">IoT Lab</div><div class="tt-hall">Lab 3</div><div class="tt-faculty">Staff-8</div></div></td>
+        <td><div class="tt-cell tt-ip"><div class="tt-subject">Image Proc Lab</div><div class="tt-hall">Lab 4</div><div class="tt-faculty">Staff-10</div></div></td>
+        <td><div class="tt-cell tt-cf"><div class="tt-subject">Cyber Forensics Lab</div><div class="tt-hall">Lab 5</div><div class="tt-faculty">Staff-9</div></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== STUDENT FLOW ===== -->
+<div class="section-header reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Student Flow by Section
+  </h2>
+  <p>Each section visits multiple halls during the week. Here is the hall trail for every section.</p>
+</div>
+
+<div class="flow-section reveal">
+  <div class="flow-cards" id="flowCards">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ===== BENEFITS ===== -->
+<div class="section-header reveal">
+  <h2>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+    Why Hall-Based Scheduling Works
+  </h2>
+  <p>Advantages of moving students to subject-specific halls instead of bringing faculty to fixed classrooms.</p>
+</div>
+
+<div class="benefits-grid reveal">
+  <div class="insight-card">
+    <div class="insight-title">Specialized Environments</div>
+    <div class="insight-text">Labs are equipped with domain-specific hardware and software. Lecture halls have large displays, tiered seating, and acoustic design. Students learn in rooms purpose-built for each discipline -- IoT labs have sensor kits, AI labs have GPU workstations, and seminar halls have multi-projector setups.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Resource Optimization</div>
+    <div class="insight-text">A single 120-seat seminar hall serves CS-A, CS-B, and CD-A for AI lectures in the morning, then CD-A and CD-B for Data Mining in the afternoon. Instead of equipping 6 classrooms with projectors and AV gear, the department invests in 10 high-quality rooms used at 76% average occupancy.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Cross-Section Interaction</div>
+    <div class="insight-text">When CS-A, CS-B, and CD-A students gather in Seminar Hall A for a common AI lecture, organic peer learning happens across section boundaries. Elective courses become natural mixing grounds where students from different specializations exchange perspectives and form cross-disciplinary study groups.</div>
+  </div>
+  <div class="insight-card">
+    <div class="insight-title">Flexible Scheduling</div>
+    <div class="insight-text">Rescheduling is as simple as reassigning a free hall to a displaced class. If Lecture Hall 2 needs maintenance, Software Testing can move to any available hall that hour. This decoupling of subject from room provides resilience against disruptions and simplifies last-minute timetable adjustments.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===== DARK MODE TOGGLE =====
+  const t = document.querySelector("[data-theme-toggle]");
+  const r = document.documentElement;
+  let d = localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
+  r.setAttribute("data-theme", d);
+  t && t.addEventListener("click", () => {
+    d = d === "dark" ? "light" : "dark";
+    r.setAttribute("data-theme", d);
+    localStorage.setItem("theme", d);
+  });
+
+  // ===== SCROLL REVEAL =====
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target);} });
+  },{threshold:0.08});
+  document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+
+  // ===== HALL DATA =====
+  const halls = [
+    { name:"Seminar Hall A", type:"Lecture", capacity:120, subject:"Artificial Intelligence", faculty:"Staff-1", sections:["CS-A","CS-B","CD-A"], current:98, color:"tt-ai" },
+    { name:"Seminar Hall B", type:"Lecture", capacity:100, subject:"Data Mining", faculty:"Staff-4", sections:["CD-A","CD-B"], current:85, color:"tt-dm" },
+    { name:"Lecture Hall 1", type:"Lecture", capacity:90, subject:"Blockchain Technology", faculty:"Staff-11", sections:["CS-A","CC-A","CD-A"], current:72, color:"tt-bc" },
+    { name:"Lecture Hall 2", type:"Lecture", capacity:80, subject:"Software Testing", faculty:"Staff-12", sections:["CS-A","CS-B"], current:65, color:"tt-st" },
+    { name:"Lecture Hall 3", type:"Lecture", capacity:80, subject:"Cloud Computing", faculty:"Staff-11", sections:["CS-A","CC-A"], current:76, color:"tt-cc" },
+    { name:"Lab 1", type:"Lab", capacity:60, subject:"Python Lab", faculty:"Staff-6", sections:["CD-B"], current:48, color:"tt-py" },
+    { name:"Lab 2", type:"Lab", capacity:60, subject:"Web Programming Lab", faculty:"Staff-12", sections:["CS-B","CD-B"], current:55, color:"tt-wp" },
+    { name:"Lab 3", type:"Lab", capacity:50, subject:"IoT Lab", faculty:"Staff-8", sections:["CS-B","CC-B"], current:48, color:"tt-iot" },
+    { name:"Lab 4", type:"Lab", capacity:60, subject:"Image Processing Lab", faculty:"Staff-10", sections:["CD-A"], current:45, color:"tt-ip" },
+    { name:"Lab 5", type:"Lab", capacity:60, subject:"Cyber Forensics Lab", faculty:"Staff-9", sections:["CC-A","CC-B"], current:58, color:"tt-cf" }
+  ];
+
+  // ===== RENDER HALL CARDS =====
+  const hallGrid = document.getElementById("hallGrid");
+  halls.forEach((h, i) => {
+    const pct = Math.round((h.current / h.capacity) * 100);
+    let barClass = "green";
+    if(pct < 30) barClass = "red";
+    else if(pct < 50) barClass = "yellow";
+
+    const card = document.createElement("div");
+    card.className = "hall-card reveal";
+    card.innerHTML = `
+      <div class="hall-card-header">
+        <div>
+          <div class="hall-card-title">${h.name}</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;font-weight:500;">Capacity: ${h.capacity} seats</div>
+        </div>
+        <span class="hall-type-badge badge-${h.type.toLowerCase()}">${h.type}</span>
+      </div>
+      <div class="hall-card-body">
+        <div class="hall-subject">${h.subject}</div>
+        <div class="hall-detail-row">
+          <span class="hall-detail-label">Faculty</span>
+          <span class="hall-detail-value">${h.faculty}</span>
+        </div>
+        <div class="hall-detail-row">
+          <span class="hall-detail-label">Sections</span>
+          <span class="hall-detail-value">${h.sections.join(" + ")}</span>
+        </div>
+        <div class="hall-sections">
+          ${h.sections.map(s => `<span class="section-tag">${s}</span>`).join("")}
+        </div>
+        <div class="occupancy-bar-wrap">
+          <div class="occupancy-bar ${barClass}" style="width:${pct}%"></div>
+        </div>
+        <div class="occupancy-label">
+          <span>Occupancy</span>
+          <span>${h.current}/${h.capacity} (${pct}%)</span>
+        </div>
+      </div>
+    `;
+    hallGrid.appendChild(card);
+    // Observe new reveal elements
+    obs.observe(card);
+  });
+
+  // ===== RENDER STUDENT FLOW =====
+  const sectionFlows = {
+    "CS-A": [
+      { hall:"Seminar Hall A", subject:"AI" },
+      { hall:"Lecture Hall 1", subject:"Blockchain" },
+      { hall:"Lecture Hall 2", subject:"Software Testing" },
+      { hall:"Lecture Hall 3", subject:"Cloud Computing" }
+    ],
+    "CS-B": [
+      { hall:"Seminar Hall A", subject:"AI" },
+      { hall:"Lecture Hall 2", subject:"Software Testing" },
+      { hall:"Lab 2", subject:"Web Programming Lab" },
+      { hall:"Lab 3", subject:"IoT Lab" }
+    ],
+    "CD-A": [
+      { hall:"Seminar Hall A", subject:"AI" },
+      { hall:"Seminar Hall B", subject:"Data Mining" },
+      { hall:"Lecture Hall 1", subject:"Blockchain" },
+      { hall:"Lab 4", subject:"Image Processing Lab" }
+    ],
+    "CD-B": [
+      { hall:"Seminar Hall B", subject:"Data Mining" },
+      { hall:"Lab 1", subject:"Python Lab" },
+      { hall:"Lab 2", subject:"Web Programming Lab" }
+    ],
+    "CC-A": [
+      { hall:"Lecture Hall 1", subject:"Blockchain" },
+      { hall:"Lecture Hall 3", subject:"Cloud Computing" },
+      { hall:"Lab 5", subject:"Cyber Forensics Lab" }
+    ],
+    "CC-B": [
+      { hall:"Lab 3", subject:"IoT Lab" },
+      { hall:"Lab 5", subject:"Cyber Forensics Lab" }
+    ]
+  };
+
+  const flowContainer = document.getElementById("flowCards");
+  Object.entries(sectionFlows).forEach(([section, flowList]) => {
+    const card = document.createElement("div");
+    card.className = "flow-card";
+    const hallItems = flowList.map((item, idx) => {
+      const arrow = idx < flowList.length - 1 ? '<span class="flow-arrow">&#8594;</span>' : '';
+      return `<div class="hall-flow-item"><div><strong>${item.hall}</strong><div class="flow-subject">${item.subject}</div></div></div>${arrow}`;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="flow-card-header">
+        <div class="flow-card-title">Section ${section}</div>
+        <span class="flow-card-count">${flowList.length} halls</span>
+      </div>
+      <div class="flow-card-body">
+        <div class="hall-flow-list">${hallItems}</div>
+      </div>
+    `;
+    flowContainer.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
